@@ -25,6 +25,7 @@ public class SqlConnection
 				+ "description TEXT,"
 				+ "timePrep TEXT,"
 				+ "timeCook TEXT,"
+				+ "timeTotal TEXT,"
 				+ "rating FLOAT,"
 				+ "category TEXT);"
 				+ "CREATE TABLE NUTRITION"
