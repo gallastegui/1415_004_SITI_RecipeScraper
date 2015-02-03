@@ -7,13 +7,16 @@ import org.jsoup.select.*;
 public class RecipeEngine
 {
 	/************************************************RECIPE METHODS**************************************************/
-	public org.jsoup.nodes.Document obtainRecipeHtml()
+	public org.jsoup.nodes.Document obtainRecipeHtml(String url)
 	{
 		Document d = null;
 		
+		if(url == null)
+			return null;
+		
 		try
 		{
-			d = Jsoup.connect("http://allrecipes.com/Recipe/Artichoke--Spinach-Dip-Restaurant-Style/Detail.aspx?evt19=1").get();
+			d = Jsoup.connect(url).get();
 		} catch (IOException e)
 		{
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -92,14 +95,17 @@ public class RecipeEngine
 		return rating;
 	}
 	
-	public HashMap<String, String> obtainRecipeValues()
+	public HashMap<String, String> obtainRecipeValues(String url)
 	{
 		HashMap<String, String> recipeValues = new HashMap<String,String>();
 		Document d = null;
 		String name=null,description=null,rating=null;
 		String [] times = {"","",""};
 		
-		d = obtainRecipeHtml();
+		if(url == null)
+			return null;
+		
+		d = obtainRecipeHtml(url);
 		if(d == null)
 			return null;
 		
@@ -223,10 +229,10 @@ public class RecipeEngine
 		return reviews;
 	}
 	/************************************************END REVIEW METHODS**************************************************/
-	public static void main(String [] args)
+	/*public static void main(String [] args)
 	{
 		RecipeEngine re = new RecipeEngine();
-		Document d = re.obtainRecipeHtml();
+		Document d = re.obtainRecipeHtml("http://allrecipes.com/");
 		Elements e2 = null, rating = null, text = null, author = null;
 		
 		e2=d.select("div[itemprop=review]");
@@ -253,5 +259,5 @@ public class RecipeEngine
 		}
 
 		System.out.println("finnish");
-	}
+	}*/
 }
