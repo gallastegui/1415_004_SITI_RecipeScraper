@@ -76,7 +76,7 @@ public class ScraperNavigator
 		return urls;
 	}
 	
-	public static void main(String [] args)
+	/*public static void main(String [] args)
 	{
 		RecipeEngine re = new RecipeEngine();
 		Document d = re.obtainRecipeHtml("http://allrecipes.com/Recipes/Holidays-and-Events/Valentines-Day/main.aspx?soid=showcase_10&Page=39#recipes");
@@ -93,5 +93,5 @@ public class ScraperNavigator
 		}
 
 		System.out.println("finnish3");
-	}
+	}*/
 }

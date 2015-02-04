@@ -1,9 +1,12 @@
 package engine;
 import java.io.IOException;
 import java.util.*;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
+
+import entity.Recipe;
 public class RecipeEngine
 {
 	/************************************************RECIPE METHODS**************************************************/
@@ -16,7 +19,7 @@ public class RecipeEngine
 		
 		try
 		{
-			d = Jsoup.connect(url).get();
+			d = Jsoup.connect(url).timeout(1000*1000).get();
 		} catch (IOException e)
 		{
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -24,6 +27,30 @@ public class RecipeEngine
 		}
 		
 		return d;
+	}
+	
+	public Recipe obtainRecipe(String url)
+	{
+		Recipe r = new Recipe();
+		Document d = null;
+		
+		if(url == null)
+			return null;
+		
+		d = obtainRecipeHtml(url);
+		if(d == null)
+			return null;
+		
+		r.setName(obtainRecipeName(d));
+		r.setDescription(obtainRecipeDescription(d));
+		r.setTimes(obtainRecipeTimes(d));
+		r.setRating(obtainRecipeRating(d));
+		r.setIngredients(obtainIngredients(d));
+		r.setNutrients(obtainNutrients(d));
+		r.setDirection(obtainDirections(d));
+		r.setReviews(obtainReviews(d));
+			
+		return r;
 	}
 	
 	public String obtainRecipeName(Document d)
