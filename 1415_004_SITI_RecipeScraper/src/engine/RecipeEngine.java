@@ -45,10 +45,10 @@ public class RecipeEngine
 		r.setDescription(obtainRecipeDescription(d));
 		r.setTimes(obtainRecipeTimes(d));
 		r.setRating(obtainRecipeRating(d));
-		r.setIngredients(obtainIngredients(d));
-		r.setNutrients(obtainNutrients(d));
+		//r.setIngredients(obtainIngredients(d));
+		//r.setNutrients(obtainNutrients(d));
 		r.setDirection(obtainDirections(d));
-		r.setReviews(obtainReviews(d));
+		//r.setReviews(obtainReviews(d));
 			
 		return r;
 	}

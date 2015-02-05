@@ -1,7 +1,6 @@
 package connection;
 import java.sql.*;
-
-import entity.Recipe;
+import entity.*;
 
 public class SqlConnection
 {
@@ -34,12 +33,12 @@ public class SqlConnection
 				+ "(nutritionId INTEGER PRIMARY KEY,"
 				+ "name TEXT NOT NULL);"
 				+ "CREATE TABLE DIRECTION"
-				+ "(directionId INTEGER PRIMARY KEY,"
+				+ "(directionId INTEGER PRIMARY KEY AUTOINCREMENT,"
 				+ "recipeId INT NOT NULL,"
 				+ "description TEXT,"
 				+ "FOREIGN KEY(recipeId) REFERENCES RECIPE(recipeId));"
 				+ "CREATE TABLE INGREDIENT"
-				+ "(ingredientId INTEGER PRIMARY KEY,"
+				+ "(ingredientId INTEGER PRIMARY KEY AUTOINCREMENT,"
 				+ "recipeId INT NOT NULL,"
 				+ "name TEXT,"
 				+ "amount TEXT,"
@@ -47,6 +46,7 @@ public class SqlConnection
 				+ "CREATE TABLE REVIEW"
 				+ "(reviewId INTEGER PRIMARY KEY,"
 				+ "recipeId INT NOT NULL,"
+				+ "stars TEXT,"
 				+ "description TEXT,"
 				+ "author TEXT,"
 				+ "FOREIGN KEY(recipeId) REFERENCES RECIPE(recipeId));"
@@ -143,11 +143,11 @@ public class SqlConnection
 		}
 	}
 	
-	public boolean insertNutrition(String name)
+	public boolean insertNutrition(Integer nutritionId, String name)
 	{
 		Statement stmt = null;
-		String sql = "INSERT INTO NUTRITION(name)"
-				+ "VALUES("+name+");";
+		String sql = "INSERT INTO NUTRITION(nutritionId,name)"
+				+ "VALUES("+nutritionId+","+name+");";
 		
 		if(name == null)
 			return false;
@@ -180,14 +180,11 @@ public class SqlConnection
 		}
 	}
 
-	public boolean insertDirection(String name, String description, int recipeId)
+	public boolean insertDirection(String description, int recipeId)
 	{
 		Statement stmt = null;
-		String sql = "INSERT INTO DIRECTION(name,recipeId,description)"
-				+ "VALUES("+name+","+recipeId+","+description+");";
-		
-		if(name == null)
-			return false;
+		String sql = "INSERT INTO DIRECTION(recipeId,description)"
+				+ "VALUES("+recipeId+","+description+");";
 		
 		if(!connectDatabase())
 			return false;
@@ -254,11 +251,11 @@ public class SqlConnection
 		}
 	}
 	
-	public boolean insertReview(String description, String author, int recipeId)
+	public boolean insertReview(String description, String author, String stars, int recipeId)
 	{
 		Statement stmt = null;
-		String sql = "INSERT INTO REVIEW(description, recipeId, author)"
-				+ "VALUES("+description+","+recipeId+","+author+");";
+		String sql = "INSERT INTO REVIEW(description, recipeId, author, stars)"
+				+ "VALUES("+description+","+recipeId+","+author+","+stars+");";
 		
 		if(description == null)
 			return false;
@@ -374,12 +371,96 @@ public class SqlConnection
 		return id;
 	}
 	
+	public Integer selectLastIdNutrition()
+	{
+		Statement stmt = null;
+		int id = -1;
+		try
+		{
+			stmt = connector.createStatement();
+			ResultSet rs = stmt.executeQuery( "SELECT nutritionId FROM NUTRITION ORDER BY nutritionId LIMIT 1 DESC;" );
+			while (rs.next())
+			{
+				id = rs.getInt("recipeId");
+			}
+			rs.close();
+			stmt.close();
+			connector.close();
+		} catch (Exception e)
+		{
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			return id;
+		}
+		
+		return id;
+	}
+	
+	public Integer selectNutrition(String name)
+	{
+		Statement stmt = null;
+		int id = 0;
+		try
+		{
+			stmt = connector.createStatement();
+			ResultSet rs = stmt.executeQuery( "SELECT nutritionId FROM NUTRITION where name = '"+name+"';");
+			while (rs.next())
+			{
+				id = rs.getInt("nutritionId");
+			}
+			rs.close();
+			stmt.close();
+			connector.close();
+		} catch (Exception e)
+		{
+			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+			return -1;
+		}
+		
+		return id;
+	}
+	
 	public boolean insertRecipe(Recipe r)
 	{
 		int id = selectLastIdRecipe() + 1;
+		int nutritionId = -1;
 		
+		/*se inserta la receta*/
 		if(insertRecipe(id, r.getName(), r.getDescription(), r.getTimes()[0], r.getTimes()[1], r.getTimes()[2], r.getRating(), r.getCategory()) == false)
 			return false;
+		
+		/*se insertan los ingredientes*/
+		for(Ingredient in : r.getIngredients())
+		{
+			insertIngredient(in.getName(), in.getAmount(),id);
+		}
+		
+		/*se insertan los nutrientes*/
+		for(Nutrient nt : r.getNutrients())
+		{
+			if((nutritionId=selectNutrition(nt.getName())) == -1)
+			{
+				nutritionId = selectLastIdNutrition() + 1;
+				if(insertNutrition(nutritionId,nt.getName()) == false)
+					return false;
+			}
+
+			if(insertrelRecipeNutrition(id, nutritionId, nt.getUnit(), nt.getPercentage()) == false)
+				return false;
+		}
+		
+		/*Se insertan los pasos*/
+		for(String dr : r.getDirection())
+		{
+			if(insertDirection(dr, id) == false)
+				return false;
+		}
+		
+		/*Se insertan las criticas*/
+		for(Review rv : r.getReviews())
+		{
+			if(insertReview(rv.getText(), rv.getAuthor(), rv.getStars(), id) == false)
+				return false;
+		}
 		
 		return true;
 	}

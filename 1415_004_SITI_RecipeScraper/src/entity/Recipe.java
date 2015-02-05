@@ -11,10 +11,10 @@ public class Recipe
 	String[] times;
 	String rating;
 	String category;
-	ArrayList<String> ingredients;
-	HashMap<String, ArrayList<String>> nutrients;
+	ArrayList<Ingredient> ingredients;
+	ArrayList<Nutrient> nutrients;
 	ArrayList<String> direction;
-	HashMap<Integer, ArrayList<String>> reviews;
+	ArrayList<Review> reviews;
 	
 	public String getCategory()
 	{
@@ -64,19 +64,19 @@ public class Recipe
 	{
 		this.rating = rating;
 	}
-	public ArrayList<String> getIngredients()
+	public ArrayList<Ingredient> getIngredients()
 	{
 		return ingredients;
 	}
-	public void setIngredients(ArrayList<String> ingredients)
+	public void setIngredients(ArrayList<Ingredient> ingredients)
 	{
 		this.ingredients = ingredients;
 	}
-	public HashMap<String, ArrayList<String>> getNutrients()
+	public ArrayList<Nutrient> getNutrients()
 	{
 		return nutrients;
 	}
-	public void setNutrients(HashMap<String, ArrayList<String>> nutrients)
+	public void setNutrients(ArrayList<Nutrient> nutrients)
 	{
 		this.nutrients = nutrients;
 	}
@@ -88,11 +88,11 @@ public class Recipe
 	{
 		this.direction = direction;
 	}
-	public HashMap<Integer, ArrayList<String>> getReviews()
+	public ArrayList<Review> getReviews()
 	{
 		return reviews;
 	}
-	public void setReviews(HashMap<Integer, ArrayList<String>> reviews)
+	public void setReviews(ArrayList<Review> reviews)
 	{
 		this.reviews = reviews;
 	}
