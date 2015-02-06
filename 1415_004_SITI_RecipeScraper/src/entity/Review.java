@@ -6,6 +6,13 @@ public class Review
 	String text;
 	String stars;
 	
+	public Review(String author, String text, String stars)
+	{
+		this.author = author;
+		this.text = text;
+		this.stars = stars;
+	}
+	
 	public String getAuthor()
 	{
 		return author;

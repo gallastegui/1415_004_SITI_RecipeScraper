@@ -6,6 +6,13 @@ public class Nutrient
 	String percentage;
 	String unit;
 	
+	public Nutrient(String name, String percentage, String unit)
+	{
+		this.name = name;
+		this.percentage = percentage;
+		this.unit = unit;
+	}
+	
 	public String getName()
 	{
 		return name;

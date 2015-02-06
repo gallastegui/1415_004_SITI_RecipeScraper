@@ -1,5 +1,6 @@
 package connection;
 import java.sql.*;
+
 import entity.*;
 
 public class SqlConnection
@@ -44,7 +45,7 @@ public class SqlConnection
 				+ "amount TEXT,"
 				+ "FOREIGN KEY(recipeId) REFERENCES RECIPE(recipeId));"
 				+ "CREATE TABLE REVIEW"
-				+ "(reviewId INTEGER PRIMARY KEY,"
+				+ "(reviewId INTEGER PRIMARY KEY AUTOINCREMENT,"
 				+ "recipeId INT NOT NULL,"
 				+ "stars TEXT,"
 				+ "description TEXT,"
@@ -102,6 +103,22 @@ public class SqlConnection
 		}
 		return true;
 	}
+	
+	public boolean disconnectDatabase()
+	{
+		if(dbName == null)
+			 return false;
+		try 
+		{
+			 connector.close();
+		}
+		catch (Exception e)
+		{
+			 System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			 return false;
+		}
+		return true;
+	}
 	/*
 	 * Insert operations 
 	 */
@@ -109,24 +126,7 @@ public class SqlConnection
 	{
 		Statement stmt = null;
 		String sql = "INSERT INTO RECIPE(recipeId, name, description, timePrep, timeCook, timeTotal, rating, category)"
-				+ "VALUES("+id+","+name+","+description+","+timePrep+","+timeCook+","+timeTotal+","+rating+","+category+");";
-		if(name == null)
-		{
-			return false;
-		}
-		
-		if(!connectDatabase())
-			return false;
-		
-		try
-		{
-			connector.setAutoCommit(false);
-		} 
-		catch (SQLException e1)
-		{
-			System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
-			return false;
-		}
+				+ "VALUES("+id+",'"+name+"','"+description+"','"+timePrep+"','"+timeCook+"','"+timeTotal+"','"+rating+"','"+category+"');";
 		
 		try
 		{
@@ -147,24 +147,8 @@ public class SqlConnection
 	{
 		Statement stmt = null;
 		String sql = "INSERT INTO NUTRITION(nutritionId,name)"
-				+ "VALUES("+nutritionId+","+name+");";
-		
-		if(name == null)
-			return false;
-		
-		if(!connectDatabase())
-			return false;
+				+ "VALUES("+nutritionId+",'"+name+"');";
 
-		try
-		{
-			connector.setAutoCommit(false);
-		} 
-		catch (SQLException e1)
-		{
-			System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
-			return false;
-		}
-		
 		try
 		{
 			stmt = connector.createStatement();
@@ -184,20 +168,7 @@ public class SqlConnection
 	{
 		Statement stmt = null;
 		String sql = "INSERT INTO DIRECTION(recipeId,description)"
-				+ "VALUES("+recipeId+","+description+");";
-		
-		if(!connectDatabase())
-			return false;
-
-		try
-		{
-			connector.setAutoCommit(false);
-		} 
-		catch (SQLException e1)
-		{
-			System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
-			return false;
-		}
+				+ "VALUES("+recipeId+",'"+description+"');";
 		
 		try
 		{
@@ -218,23 +189,7 @@ public class SqlConnection
 	{
 		Statement stmt = null;
 		String sql = "INSERT INTO INGREDIENT(name, recipeId, amount)"
-				+ "VALUES("+name+","+recipeId+","+amount+");";
-		
-		if(name == null)
-			return false;
-		
-		if(!connectDatabase())
-			return false;
-
-		try
-		{
-			connector.setAutoCommit(false);
-		} 
-		catch (SQLException e1)
-		{
-			System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
-			return false;
-		}
+				+ "VALUES('"+name+"',"+recipeId+",'"+amount+"');";
 		
 		try
 		{
@@ -255,24 +210,8 @@ public class SqlConnection
 	{
 		Statement stmt = null;
 		String sql = "INSERT INTO REVIEW(description, recipeId, author, stars)"
-				+ "VALUES("+description+","+recipeId+","+author+","+stars+");";
-		
-		if(description == null)
-			return false;
-		
-		if(!connectDatabase())
-			return false;
-
-		try
-		{
-			connector.setAutoCommit(false);
-		} 
-		catch (SQLException e1)
-		{
-			System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
-			return false;
-		}
-		
+				+ "VALUES(\""+description.replace('"', '\'')+"\","+recipeId+",\""+author+"\",\""+stars+"\");";
+	
 		try
 		{
 			stmt = connector.createStatement();
@@ -291,24 +230,8 @@ public class SqlConnection
 	public boolean insertrelRecipeNutrition(int recipeId, int nutritionId,String amount, String percentage)
 	{
 		Statement stmt = null;
-		String sql = "INSERT INTO NUTRITION"
-				+ "VALUES("+recipeId+","+nutritionId+","+amount+","+percentage+");";
-		
-		if(amount == null)
-			return false;
-		
-		if(!connectDatabase())
-			return false;
-
-		try
-		{
-			connector.setAutoCommit(false);
-		} 
-		catch (SQLException e1)
-		{
-			System.err.println(e1.getClass().getName() + ": " + e1.getMessage());
-			return false;
-		}
+		String sql = "INSERT INTO REL_RECIPE_NUTRITION "
+				+ "VALUES("+recipeId+","+nutritionId+",'"+amount+"','"+percentage+"');";
 		
 		try
 		{
@@ -354,14 +277,14 @@ public class SqlConnection
 		try
 		{
 			stmt = connector.createStatement();
-			ResultSet rs = stmt.executeQuery( "SELECT recipeId FROM RECIPE ORDER BY recipeId LIMIT 1 DESC;" );
+			ResultSet rs = stmt.executeQuery( "SELECT recipeId FROM RECIPE ORDER BY recipeId DESC LIMIT 1;" );
 			while (rs.next())
 			{
 				id = rs.getInt("recipeId");
 			}
 			rs.close();
 			stmt.close();
-			connector.close();
+
 		} catch (Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -378,14 +301,14 @@ public class SqlConnection
 		try
 		{
 			stmt = connector.createStatement();
-			ResultSet rs = stmt.executeQuery( "SELECT nutritionId FROM NUTRITION ORDER BY nutritionId LIMIT 1 DESC;" );
+			ResultSet rs = stmt.executeQuery( "SELECT nutritionId FROM NUTRITION ORDER BY nutritionId DESC LIMIT 1;" );
 			while (rs.next())
 			{
-				id = rs.getInt("recipeId");
+				id = rs.getInt("nutritionId");
 			}
 			rs.close();
 			stmt.close();
-			connector.close();
+			
 		} catch (Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -398,7 +321,7 @@ public class SqlConnection
 	public Integer selectNutrition(String name)
 	{
 		Statement stmt = null;
-		int id = 0;
+		int id = -1;
 		try
 		{
 			stmt = connector.createStatement();
@@ -409,7 +332,7 @@ public class SqlConnection
 			}
 			rs.close();
 			stmt.close();
-			connector.close();
+
 		} catch (Exception e)
 		{
 			System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -421,12 +344,19 @@ public class SqlConnection
 	
 	public boolean insertRecipe(Recipe r)
 	{
+		
+		if(connectDatabase() == false)
+			return false;
+		
 		int id = selectLastIdRecipe() + 1;
 		int nutritionId = -1;
 		
 		/*se inserta la receta*/
 		if(insertRecipe(id, r.getName(), r.getDescription(), r.getTimes()[0], r.getTimes()[1], r.getTimes()[2], r.getRating(), r.getCategory()) == false)
+		{
+			disconnectDatabase();
 			return false;
+		}
 		
 		/*se insertan los ingredientes*/
 		for(Ingredient in : r.getIngredients())
@@ -441,26 +371,49 @@ public class SqlConnection
 			{
 				nutritionId = selectLastIdNutrition() + 1;
 				if(insertNutrition(nutritionId,nt.getName()) == false)
+				{
+					disconnectDatabase();
 					return false;
+				}
 			}
 
 			if(insertrelRecipeNutrition(id, nutritionId, nt.getUnit(), nt.getPercentage()) == false)
+			{
+				disconnectDatabase();
 				return false;
+			}
 		}
 		
 		/*Se insertan los pasos*/
 		for(String dr : r.getDirection())
 		{
 			if(insertDirection(dr, id) == false)
+			{
+				disconnectDatabase();
 				return false;
+			}
 		}
 		
 		/*Se insertan las criticas*/
 		for(Review rv : r.getReviews())
 		{
 			if(insertReview(rv.getText(), rv.getAuthor(), rv.getStars(), id) == false)
+			{
+				disconnectDatabase();
 				return false;
+			}
 		}
+		
+		try
+		{
+			connector.commit();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		
+		disconnectDatabase();
 		
 		return true;
 	}
@@ -468,7 +421,7 @@ public class SqlConnection
 	public static void main(String [] args)
 	{
 		
-		SqlConnection sc = new SqlConnection("C:\\Users\\eps\\Downloads\\Sqliteman-1.2.2\\allrecipesv3.db");
+		SqlConnection sc = new SqlConnection("C:\\Users\\jars\\Sqliteman-1.2.2\\allrecipesv1.db");
 		
 		sc.crateDatabase();
 	}

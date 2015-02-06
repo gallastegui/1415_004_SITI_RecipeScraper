@@ -1,15 +1,14 @@
 package test;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import navigation.ScraperNavigator;
 
 import org.jsoup.nodes.Document;
 
+import connection.SqlConnection;
 import engine.RecipeEngine;
+import entity.Recipe;
 
 
 
@@ -19,7 +18,8 @@ public class TestScraper
 	{
 		RecipeEngine re = new RecipeEngine();
 		ScraperNavigator sn = new ScraperNavigator();
-		
+		SqlConnection sc = new SqlConnection("C:\\Users\\jars\\Sqliteman-1.2.2\\allrecipesv1.db");
+		Recipe actualRecipe = null;
 		Document d = re.obtainRecipeHtml("http://allrecipes.com/"), aux = null;
 		ArrayList<String> categoryUrls = null, recipeUrls = null;
 		String page = null;
@@ -41,8 +41,16 @@ public class TestScraper
 				recipeUrls = sn.getRecipeUrlsFromPage(aux);
 				for(String recipeUrl : recipeUrls)
 				{
-					contador++;
 					System.out.println(contador+":"+recipeUrl);
+					actualRecipe = re.obtainRecipe("http://allrecipes.com"+recipeUrl);
+					if(actualRecipe != null)
+					{
+						actualRecipe.setCategory(categoryUrl);
+						if(sc.insertRecipe(actualRecipe) == true)
+						{
+							contador++;
+						}
+					}
 				}
 				page = sn.getNextPage(aux);
 				recipeUrls.clear();
@@ -50,7 +58,6 @@ public class TestScraper
 					flag = 1;
 			}
 		}
-		
 		return;
 	}
 }

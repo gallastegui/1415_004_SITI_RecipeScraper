@@ -6,7 +6,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
 
-import entity.Recipe;
+import entity.*;
 public class RecipeEngine
 {
 	/************************************************RECIPE METHODS**************************************************/
@@ -45,10 +45,10 @@ public class RecipeEngine
 		r.setDescription(obtainRecipeDescription(d));
 		r.setTimes(obtainRecipeTimes(d));
 		r.setRating(obtainRecipeRating(d));
-		//r.setIngredients(obtainIngredients(d));
-		//r.setNutrients(obtainNutrients(d));
+		r.setIngredients(obtainIngredients(d));
+		r.setNutrients(obtainNutrients(d));
 		r.setDirection(obtainDirections(d));
-		//r.setReviews(obtainReviews(d));
+		r.setReviews(obtainReviews(d));
 			
 		return r;
 	}
@@ -152,14 +152,29 @@ public class RecipeEngine
 	}
 	/************************************************END RECIPE METHODS**************************************************/
 	/************************************************INGREDIENT METHODS**************************************************/
-	public ArrayList<String> obtainIngredients(Document d)
+	public ArrayList<Ingredient> obtainIngredients(Document d)
 	{
-		ArrayList<String> ingredients = new ArrayList<String>();
-		Elements e= null;
+		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+		Elements e= null, eamount = null, ename = null;
+		String name = "", amount = "";
+		
 		e=d.select("li[id=liIngredient]");
+		
 		for(Element el : e)
 		{
-			ingredients.add(el.text());
+			eamount = el.select("span[id=lblIngAmount]");
+			for(Element am : eamount)
+			{
+				amount = am.text();
+			}
+			
+			ename = el.select("span[id=lblIngName]");
+			for(Element nm : ename)
+			{
+				name = nm.text();
+			}
+			
+			ingredients.add(new Ingredient(name, amount));
 		}
 	
 		return ingredients;
@@ -167,11 +182,11 @@ public class RecipeEngine
 	}
 	/************************************************END INGREDIENT METHODS**************************************************/
 	/************************************************NUTRITION METHODS**************************************************/
-	public HashMap<String, ArrayList<String>> obtainNutrients(Document d)
+	public ArrayList<Nutrient> obtainNutrients(Document d)
 	{
 		Elements e2= null,categories = null, units = null, percentages = null;
 		String category = null, unit = null, percentage = null;
-		HashMap<String, ArrayList<String>> nutrients = new HashMap<String, ArrayList<String>>();
+		ArrayList<Nutrient> nutrients = new ArrayList<Nutrient>();
 		ArrayList<String> aux = null;
 		
 		e2=d.select("ul[id=ulNutrient]");
@@ -194,10 +209,8 @@ public class RecipeEngine
 			{
 				percentage = per.text();
 			}
-			aux = new ArrayList<String>();
-			aux.add(unit);
-			aux.add(percentage);
-			nutrients.put(category, aux);
+			
+			nutrients.add(new Nutrient(category, percentage, unit));
 		}
 		return nutrients;
 	}
@@ -217,11 +230,9 @@ public class RecipeEngine
 	}
 	/************************************************END DIRECTION METHODS**************************************************/
 	/************************************************REVIEW METHODS**************************************************/
-	public HashMap<Integer, ArrayList<String>> obtainReviews(Document d)
+	public ArrayList<Review> obtainReviews(Document d)
 	{
-		HashMap<Integer, ArrayList<String>> reviews = new HashMap<Integer, ArrayList<String>>();
-		ArrayList<String> aux = new ArrayList<String>();
-		Integer incr = 1;
+		ArrayList<Review> reviews = new ArrayList<Review>();
 		Elements e = null, rating = null, text = null, author = null;
 		String stars = null, txt = null, auth = null;
 		
@@ -245,46 +256,33 @@ public class RecipeEngine
 			{
 				auth = au.text();
 			}
-			aux.add(auth);
-			aux.add(txt);
-			aux.add(stars);
-			reviews.put(incr, aux);
-			incr++;
-			aux.clear();
+			reviews.add(new Review(auth, txt, stars));
 		}
 		
 		return reviews;
 	}
 	/************************************************END REVIEW METHODS**************************************************/
-	/*public static void main(String [] args)
+	public static void main(String [] args)
 	{
 		RecipeEngine re = new RecipeEngine();
-		Document d = re.obtainRecipeHtml("http://allrecipes.com/");
-		Elements e2 = null, rating = null, text = null, author = null;
+		Document d = re.obtainRecipeHtml("http://allrecipes.com/recipe/buffalo-chicken-calzone/detail.aspx?soid=home_pins_3");
+		ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
+		Elements e= null, amount = null, name = null;
+		e=d.select("li[id=liIngredient]");
 		
-		e2=d.select("div[itemprop=review]");
-		for(Element review : e2)
+		for(Element el : e)
 		{
-			rating = review.select("meta[itemprop=ratingValue]");
-			for(Element rat : rating)
+			amount = el.select("span[id=lblIngAmount]");
+			for(Element am : amount)
 			{
-				String stars = rat.attr("content");
-				System.out.println(stars);
+				System.out.println(am.text());
 			}
 			
-			text = review.select("p[id=pReviewText]");
-			for(Element tx : text)
+			name = el.select("span[id=lblIngName]");
+			for(Element nm : name)
 			{
-				System.out.println(tx.text());
-			}
-			
-			author = review.select("span[itemprop=author]");
-			for(Element au : author)
-			{
-				System.out.println(au.text());
+				System.out.println(nm.text());
 			}
 		}
-
-		System.out.println("finnish");
-	}*/
+	}
 }
