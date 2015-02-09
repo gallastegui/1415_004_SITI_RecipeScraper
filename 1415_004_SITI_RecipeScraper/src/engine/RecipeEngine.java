@@ -19,7 +19,7 @@ public class RecipeEngine
 		
 		try
 		{
-			d = Jsoup.connect(url).timeout(1000*1000).get();
+			d = Jsoup.connect(url).timeout(0).get();
 		} catch (IOException e)
 		{
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());

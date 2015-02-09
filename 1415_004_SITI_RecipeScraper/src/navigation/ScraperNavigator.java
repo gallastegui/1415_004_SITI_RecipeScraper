@@ -48,7 +48,7 @@ public class ScraperNavigator
 			links = e2.select("a");
 			for(Element link : links)
 			{
-				if(link.text().equals("NEXT »"))
+				if(link.text().equals("NEXT Â»"))
 				{
 					url = link.attr("href");
 				}

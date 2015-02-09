@@ -35,6 +35,7 @@ public class TestScraper
 			d = re.obtainRecipeHtml(categoryUrl);
 			page = categoryUrl;
 			flag = 0;
+			System.out.println("------------------------------------------------------"+categoryUrl+"----------------------------------------------------");
 			while(flag == 0)
 			{
 				aux = re.obtainRecipeHtml(page);
@@ -56,6 +57,8 @@ public class TestScraper
 				recipeUrls.clear();
 				if(page == null)
 					flag = 1;
+				else
+					System.out.println("¡¡Siguiente página!!");
 			}
 		}
 		return;

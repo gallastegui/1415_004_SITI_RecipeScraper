@@ -126,7 +126,7 @@ public class SqlConnection
 	{
 		Statement stmt = null;
 		String sql = "INSERT INTO RECIPE(recipeId, name, description, timePrep, timeCook, timeTotal, rating, category)"
-				+ "VALUES("+id+",'"+name+"','"+description+"','"+timePrep+"','"+timeCook+"','"+timeTotal+"','"+rating+"','"+category+"');";
+				+ "VALUES("+id+",\""+name.replace('"', '\'')+"\",\""+description.replace('"', '\'')+"\",\""+timePrep+"\",\""+timeCook+"\",\""+timeTotal+"\",\""+rating+"\",\""+category.replace('"', '\'')+"\");";
 		
 		try
 		{
@@ -168,7 +168,7 @@ public class SqlConnection
 	{
 		Statement stmt = null;
 		String sql = "INSERT INTO DIRECTION(recipeId,description)"
-				+ "VALUES("+recipeId+",'"+description+"');";
+				+ "VALUES("+recipeId+",\""+description.replace('"', '\'')+"\");";
 		
 		try
 		{
@@ -189,7 +189,7 @@ public class SqlConnection
 	{
 		Statement stmt = null;
 		String sql = "INSERT INTO INGREDIENT(name, recipeId, amount)"
-				+ "VALUES('"+name+"',"+recipeId+",'"+amount+"');";
+				+ "VALUES(\""+name.replace('"', '\'')+"\","+recipeId+",\""+amount+"\");";
 		
 		try
 		{
@@ -210,7 +210,7 @@ public class SqlConnection
 	{
 		Statement stmt = null;
 		String sql = "INSERT INTO REVIEW(description, recipeId, author, stars)"
-				+ "VALUES(\""+description.replace('"', '\'')+"\","+recipeId+",\""+author+"\",\""+stars+"\");";
+				+ "VALUES(\""+description.replace('"', '\'')+"\","+recipeId+",\""+author.replace('"', '\'')+"\",\""+stars+"\");";
 	
 		try
 		{
