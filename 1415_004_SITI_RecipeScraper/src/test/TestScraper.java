@@ -23,7 +23,7 @@ public class TestScraper
 		Document d = re.obtainRecipeHtml("http://allrecipes.com/"), aux = null;
 		ArrayList<String> categoryUrls = null, recipeUrls = null;
 		String page = null;
-		int contador = 0, flag = 0;
+		int contador = 0, flag = 0, flag2 = 0;
 		
 		categoryUrls = sn.getCategoryUrls(d);
 		
@@ -42,14 +42,25 @@ public class TestScraper
 				recipeUrls = sn.getRecipeUrlsFromPage(aux);
 				for(String recipeUrl : recipeUrls)
 				{
-					System.out.println(contador+":"+recipeUrl);
-					actualRecipe = re.obtainRecipe("http://allrecipes.com"+recipeUrl);
-					if(actualRecipe != null)
+					if(flag2 == 1)
 					{
-						actualRecipe.setCategory(categoryUrl);
-						if(sc.insertRecipe(actualRecipe) == true)
+						System.out.println(contador+":"+recipeUrl);
+						actualRecipe = re.obtainRecipe("http://allrecipes.com"+recipeUrl);
+						if(actualRecipe != null)
 						{
-							contador++;
+							actualRecipe.setCategory(categoryUrl);
+							if(sc.insertRecipe(actualRecipe) == true)
+							{
+								contador++;
+							}
+						}
+					}
+					else
+					{
+						if(recipeUrl.equals("/Recipe/Cream-Cheese-Appetizer/Detail.aspx?evt19=1"))
+						{
+							System.out.println("Receta encontrada!!");
+							flag2 = 1;
 						}
 					}
 				}
