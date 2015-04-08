@@ -18,7 +18,7 @@ public class TestScraper
 	{
 		RecipeEngine re = new RecipeEngine();
 		ScraperNavigator sn = new ScraperNavigator();
-		SqlConnection sc = new SqlConnection("C:\\Users\\jars\\Sqliteman-1.2.2\\allrecipesv1.db");
+		SqlConnection sc = new SqlConnection("/Users/Administrador/Documents/database/allrecipesv1.db");
 		Recipe actualRecipe = null;
 		Document d = re.obtainRecipeHtml("http://allrecipes.com/"), aux = null;
 		ArrayList<String> categoryUrls = null, recipeUrls = null;
@@ -42,8 +42,6 @@ public class TestScraper
 				recipeUrls = sn.getRecipeUrlsFromPage(aux);
 				for(String recipeUrl : recipeUrls)
 				{
-					if(flag2 == 1)
-					{
 						System.out.println(contador+":"+recipeUrl);
 						actualRecipe = re.obtainRecipe("http://allrecipes.com"+recipeUrl);
 						if(actualRecipe != null)
@@ -54,15 +52,6 @@ public class TestScraper
 								contador++;
 							}
 						}
-					}
-					else
-					{
-						if(recipeUrl.equals("/Recipe/Cream-Cheese-Appetizer/Detail.aspx?evt19=1"))
-						{
-							System.out.println("Receta encontrada!!");
-							flag2 = 1;
-						}
-					}
 				}
 				page = sn.getNextPage(aux);
 				recipeUrls.clear();

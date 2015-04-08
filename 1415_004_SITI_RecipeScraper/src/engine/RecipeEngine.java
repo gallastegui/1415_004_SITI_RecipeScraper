@@ -2,6 +2,7 @@ package engine;
 import java.io.IOException;
 import java.util.*;
 
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
@@ -19,12 +20,24 @@ public class RecipeEngine
 		
 		try
 		{
-			d = Jsoup.connect(url).timeout(0).get();
-		} catch (IOException e)
-		{
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			return null;
+			d = Jsoup.connect(url).timeout(0).userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
+		               .referrer("http://www.google.com")              
+		               .get();
 		}
+		catch (NullPointerException e)
+		{
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    } 
+		catch (HttpStatusException e)
+		{
+	        e.printStackTrace();
+	    } 
+		catch (IOException e)
+		{
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    }
 		
 		return d;
 	}

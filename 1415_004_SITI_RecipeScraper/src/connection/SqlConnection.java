@@ -421,7 +421,7 @@ public class SqlConnection
 	public static void main(String [] args)
 	{
 		
-		SqlConnection sc = new SqlConnection("C:\\Users\\jars\\Sqliteman-1.2.2\\allrecipesv1.db");
+		SqlConnection sc = new SqlConnection("/Users/Administrador/Documents/database/allrecipesv1.db");
 		
 		sc.crateDatabase();
 	}
